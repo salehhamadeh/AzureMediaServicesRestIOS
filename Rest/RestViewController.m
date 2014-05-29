@@ -22,7 +22,7 @@
     
     NSString *apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
     
-    NSString *apiVersionQueryString = @"api-version=2.6";
+    NSString *apiVersionQueryString = @"api-version=2.2";
     return [NSString stringWithFormat:@"%@/%@?%@", apiUrl, endpoint, apiVersionQueryString];
 }
 
@@ -480,7 +480,7 @@
     if (assetId == nil) {
         return;
     }
-    messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Asset created."];
+    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Asset created."];
     
     //Create AccessPolicy with write permissions
     NSString *accessPolicyId = [self createAccessPolicy:@"My Access Policy"
@@ -523,7 +523,7 @@
     if (uploadStatusCode != 201) {
         NSLog(@"ERROR: Upload response code: %d", uploadStatusCode);
     }
-    messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Video uploaded to Azure."];
+    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Video uploaded to Azure."];
     
     //TODO: Delete upload Locator from Azure (optional)
     
@@ -533,7 +533,7 @@
     if (createAssetFileStatusCode != 204) {
         NSLog(@"ERROR: Create AssetFile response code: %d", createAssetFileStatusCode);
     }
-    messages = [NSString stringWithFormat:@"%@%n%@", messages, @"File metadata generated."];
+    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"File metadata generated."];
     
     //Phase 2: Encoding
     //Obtain th Media Processor
@@ -542,15 +542,15 @@
     NSLog(@"Asset ID: %@", assetId);
     NSLog(@"Media Encoder ID: %@", mediaEncoderId);
     //NSLog(@"Media Processor response: %@",  mediaProcessors);
-    messages = [NSString stringWithFormat:@"%@%n%@", messages, @"MediaProcessor grabbed."];
+    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"MediaProcessor grabbed."];
     
     //TODO: Uncomment and Complete Job request and check if it worked.
-    /*NSDictionary *encodingJobResponse = [self startEncodingJob:@"Encoding from iOS"
+    NSDictionary *encodingJobResponse = [self startEncodingJob:@"Encoding from iOS"
                    assetId:assetId
           mediaProcessorId:mediaEncoderId
             encodingPreset:@"H264 Broadband 720p"
                accessToken:self.accessToken];
-    NSLog(@"Job response: %@", encodingJobResponse);*/
+    NSLog(@"Job response: %@", encodingJobResponse);
     
     //Phase 3: Delivering
     
