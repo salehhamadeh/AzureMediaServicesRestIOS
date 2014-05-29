@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		D141B5CC1936631A00BA7EF4 /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = D141B5CB1936631A00BA7EF4 /* Media.xcassets */; };
+		D141B5CE1936643A00BA7EF4 /* videos.bundle in Resources */ = {isa = PBXBuildFile; fileRef = D141B5CD1936643A00BA7EF4 /* videos.bundle */; };
 		D1C9E2C0192E7BC40080753A /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1C9E2BF192E7BC40080753A /* Foundation.framework */; };
 		D1C9E2C2192E7BC40080753A /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1C9E2C1192E7BC40080753A /* CoreGraphics.framework */; };
 		D1C9E2C4192E7BC40080753A /* UIKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D1C9E2C3192E7BC40080753A /* UIKit.framework */; };
@@ -34,6 +36,8 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		D141B5CB1936631A00BA7EF4 /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
+		D141B5CD1936643A00BA7EF4 /* videos.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = videos.bundle; path = ../videos.bundle; sourceTree = "<group>"; };
 		D1C9E2BC192E7BC40080753A /* Rest.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rest.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		D1C9E2BF192E7BC40080753A /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		D1C9E2C1192E7BC40080753A /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
@@ -82,6 +86,7 @@
 		D1C9E2B3192E7BC40080753A = {
 			isa = PBXGroup;
 			children = (
+				D141B5CB1936631A00BA7EF4 /* Media.xcassets */,
 				D1C9E2C5192E7BC40080753A /* Rest */,
 				D1C9E2E4192E7BC40080753A /* RestTests */,
 				D1C9E2BE192E7BC40080753A /* Frameworks */,
@@ -112,6 +117,7 @@
 		D1C9E2C5192E7BC40080753A /* Rest */ = {
 			isa = PBXGroup;
 			children = (
+				D141B5CD1936643A00BA7EF4 /* videos.bundle */,
 				D1C9E2CE192E7BC40080753A /* RestAppDelegate.h */,
 				D1C9E2CF192E7BC40080753A /* RestAppDelegate.m */,
 				D1C9E2D1192E7BC40080753A /* Main.storyboard */,
@@ -231,6 +237,8 @@
 			files = (
 				D1C9E2D8192E7BC40080753A /* Images.xcassets in Resources */,
 				D1C9E2CA192E7BC40080753A /* InfoPlist.strings in Resources */,
+				D141B5CE1936643A00BA7EF4 /* videos.bundle in Resources */,
+				D141B5CC1936631A00BA7EF4 /* Media.xcassets in Resources */,
 				D1C9E2D3192E7BC40080753A /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -457,6 +465,7 @@
 				D1C9E2F0192E7BC40080753A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		D1C9E2F1192E7BC40080753A /* Build configuration list for PBXNativeTarget "RestTests" */ = {
 			isa = XCConfigurationList;
@@ -465,6 +474,7 @@
 				D1C9E2F3192E7BC40080753A /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
