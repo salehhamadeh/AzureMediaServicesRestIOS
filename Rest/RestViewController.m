@@ -16,7 +16,12 @@
 
 - (NSString *)getAPIEndpointURL:(NSString *)endpoint
 {
-    NSString *apiUrl = @"https://wamsbluclus001rest-hs.cloudapp.net/api";
+    //Specific to account
+    //saleh account
+    //NSString *apiUrl = @"https://wamsbluclus001rest-hs.cloudapp.net/api";
+    
+    NSString *apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
+    
     NSString *apiVersionQueryString = @"api-version=2.6";
     return [NSString stringWithFormat:@"%@/%@?%@", apiUrl, endpoint, apiVersionQueryString];
 }
@@ -125,6 +130,7 @@
                           options:kNilOptions
                           error:&error];
     if (error != nil) {
+        NSLog(responseData);
         NSLog(@"ERROR: Cannot parse response JSON");
         return nil;
     }
@@ -559,8 +565,15 @@
     [super viewDidLoad];
     
     //Get the access token
-    self.accessToken = [self getAccessToken:@"tftestmediaservice"
-                                 accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
+    
+    //saleh
+    //self.accessToken = [self getAccessToken:@"tftestmediaservice"
+    //                             accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
+    
+    //tripfilesQA
+    self.accessToken = [self getAccessToken:@"tripfilesqa"
+                                accountKey:@"NSwCeVlqkeNUa3yuLe7o1tVsNPLVeAaWVrkdJI1IsQs="];
+    
     
     /*self.accessToken = @"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=tftestmediaservice&urn%3aSubscriptionId=73a37cf8-3c3d-45c0-8442-6d825b799bb5&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1401329690&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net %2f&HMACSHA256=tygFBbqNhfCL6zcBxm1r6xDHolcioliQYtKa0NbnY6I%3d";*/
 }
