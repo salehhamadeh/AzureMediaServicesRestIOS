@@ -14,6 +14,8 @@
 @property (nonatomic, strong) IBOutlet UILabel *greetingContent;
 
 @property (nonatomic, strong) NSString *accessToken;
+@property (nonatomic, strong) NSString *apiUrl;
+@property (nonatomic, strong) NSString *apiVersion;
 
 - (IBAction)uploadVideoToAzure;
 @end

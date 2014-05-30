@@ -20,10 +20,29 @@
     //saleh account
     //NSString *apiUrl = @"https://wamsbluclus001rest-hs.cloudapp.net/api";
     
-    NSString *apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
+    NSString *apiVersionQueryString = [NSString  stringWithFormat:@"api-version=%@", self.apiVersion];
+    return [NSString stringWithFormat:@"%@/%@?%@", self.apiUrl, endpoint, apiVersionQueryString];
+}
+
+- (void)viewDidLoad
+{
+    [super viewDidLoad];
     
-    NSString *apiVersionQueryString = @"api-version=2.2";
-    return [NSString stringWithFormat:@"%@/%@?%@", apiUrl, endpoint, apiVersionQueryString];
+    //Get the access token
+    
+    //saleh
+    //self.accessToken = [self getAccessToken:@"tftestmediaservice"
+    //                             accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
+    
+    //tripfilesQA
+    self.accessToken = [self getAccessToken:@"tripfilesqa2"
+                                 accountKey:@"0uXuWRXKVX23EUhV8LT5ZDPT/uM6JwIfIrCJJJCAWk0="];
+    
+    self.apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
+    self.apiVersion = @"2.6";
+    
+    
+    /*self.accessToken = @"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=tftestmediaservice&urn%3aSubscriptionId=73a37cf8-3c3d-45c0-8442-6d825b799bb5&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1401329690&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net %2f&HMACSHA256=tygFBbqNhfCL6zcBxm1r6xDHolcioliQYtKa0NbnY6I%3d";*/
 }
 
 /**
@@ -396,7 +415,7 @@
     NSError *error;
     
     // Create the request.
-    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:@"https://wamsbluclus001rest-hs.cloudapp.net/api/Jobs?api-version=2.0"]];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:[self getAPIEndpointURL:@"Jobs"]]];
     
     // Specify that it will be a POST request
     [request setHTTPMethod:@"POST"];
@@ -404,7 +423,7 @@
     // Set headers "Content-Type: application/json; charset=utf-8" and "Accept: application/json"
     [request setValue:@"application/json; charset=utf-8" forHTTPHeaderField:@"Content-Type"];
     [request setValue:@"application/json" forHTTPHeaderField:@"Accept"];
-    [request setValue:@"2.0" forHTTPHeaderField:@"x-ms-version"];
+    [request setValue:self.apiVersion forHTTPHeaderField:@"x-ms-version"];
     
     // Add the authorization token to the header
     [request setValue:[NSString stringWithFormat:@"Bearer %@", accessToken] forHTTPHeaderField:@"Authorization"];
@@ -412,11 +431,14 @@
     // Convert your data and set your request's HTTPBody property
     //build an info object and convert to json
     NSString *urlEncodedAssetId = [self urlEncode:assetId];
-    NSString *inputMediaAssetUrl = [NSString stringWithFormat:@"https://wamsbluclus001rest-hs.cloudapp.net/api/Assets('%@')", urlEncodedAssetId];
+    NSString *inputMediaAssetUrl = [NSString stringWithFormat:@"%@/Assets('%@')", self.apiUrl, urlEncodedAssetId];
     NSArray *inputMediaAssets = [NSArray arrayWithObjects:
                                  [NSDictionary dictionaryWithObjectsAndKeys:
-                                    inputMediaAssetUrl,
-                                    @"Uri",
+                                    [NSDictionary dictionaryWithObjectsAndKeys:
+                                     inputMediaAssetUrl,
+                                     @"uri"
+                                     , nil],
+                                    @"__metadata",
                                     nil],
                                  nil];
     NSArray *tasks = [NSArray arrayWithObjects:
@@ -425,7 +447,7 @@
                        @"Configuration",
                        mediaProcessorId,
                        @"MediaProcessorId",
-                       @"<?xml version=\"1.0\" encoding=\"utf-8\"?><taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
+                       @"<taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
                        @"TaskBody",
                        nil],
                       nil];
@@ -447,6 +469,7 @@
     }
     
     request.HTTPBody = requestJsonData;
+    NSLog(@"Request JSON data: %@", [NSString stringWithUTF8String:[requestJsonData bytes]]);
     
     //Send the request
     NSURLResponse * response = nil;
@@ -482,14 +505,20 @@
     }
     //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Asset created."];
     
+    
+    
+
     //Create AccessPolicy with write permissions
     NSString *accessPolicyId = [self createAccessPolicy:@"My Access Policy"
-           durationInMinutes:@"300"
-                 permissions:[NSNumber numberWithInt:2]
-                 accessToken:self.accessToken];
+                                      durationInMinutes:@"300"
+                                            permissions:[NSNumber numberWithInt:2]
+                                            accessToken:self.accessToken];
     
     //Create Locator with an upload URL to use when uploading the video
     //Set the locator's start time to 5 minutes before current time. This is needed, according to the API reference, for us to use to locator immediately.
+    
+    
+    
     NSDate *beforeFiveMinutes = [[NSDate alloc] initWithTimeIntervalSinceNow:-5*60];
     NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
     [DateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
@@ -497,14 +526,14 @@
     
     //Create the locator
     NSDictionary *locatorResponse = [self createLocator:assetId
-                               accessPolicyId:accessPolicyId
-                                    startTime:startTime
-                                         type:[NSNumber numberWithInt:1] //Type 1 means SAS URL (downloading only no streaming). Only used with unencoded asset
-                                  accessToken:self.accessToken];
+                                         accessPolicyId:accessPolicyId
+                                              startTime:startTime
+                                                   type:[NSNumber numberWithInt:1] //Type 1 means SAS URL (downloading only no streaming). Only used with unencoded asset
+                                            accessToken:self.accessToken];
     
     //Upload video to storage
-    /* NOTE: This method works for files < 64MB. For files > 64MB, we need to upload in chunks. See Azure Storage REST API for
-       more info.*/
+    //NOTE: This method works for files < 64MB. For files > 64MB, we need to upload in chunks. See Azure Storage REST API for
+    // more info.
     //Gets the blob's directory from the Locator's path
     NSString *blobDirectoryPath = [locatorResponse objectForKey:@"Path"];
     NSURL *blobUrl = [NSURL URLWithString:blobDirectoryPath];   //Create an NSURL from the URL String
@@ -518,11 +547,13 @@
     NSData *videoData = [NSData dataWithContentsOfFile:videoName];
     
     NSInteger uploadStatusCode = [self uploadFileToBlob:blobUrlString
-                                                fileData:videoData
-                                             accessToken:self.accessToken];
+                                               fileData:videoData
+                                            accessToken:self.accessToken];
     if (uploadStatusCode != 201) {
         NSLog(@"ERROR: Upload response code: %d", uploadStatusCode);
     }
+    
+    
     //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Video uploaded to Azure."];
     
     //TODO: Delete upload Locator from Azure (optional)
@@ -558,24 +589,6 @@
     
     //Show the messages on the screen
     self.greetingContent.text = messages;
-}
-
-- (void)viewDidLoad
-{
-    [super viewDidLoad];
-    
-    //Get the access token
-    
-    //saleh
-    //self.accessToken = [self getAccessToken:@"tftestmediaservice"
-    //                             accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
-    
-    //tripfilesQA
-    self.accessToken = [self getAccessToken:@"tripfilesqa"
-                                accountKey:@"NSwCeVlqkeNUa3yuLe7o1tVsNPLVeAaWVrkdJI1IsQs="];
-    
-    
-    /*self.accessToken = @"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=tftestmediaservice&urn%3aSubscriptionId=73a37cf8-3c3d-45c0-8442-6d825b799bb5&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1401329690&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net %2f&HMACSHA256=tygFBbqNhfCL6zcBxm1r6xDHolcioliQYtKa0NbnY6I%3d";*/
 }
 
 - (void)didReceiveMemoryWarning
