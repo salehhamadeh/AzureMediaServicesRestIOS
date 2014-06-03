@@ -14,35 +14,33 @@
 
 @implementation RestViewController
 
+/**
+ * Utility function used to get the URL of an API endpoint
+ * @param endpoint The name of the endpoint
+ *
+ */
 - (NSString *)getAPIEndpointURL:(NSString *)endpoint
 {
-    //Specific to account
-    //saleh account
-    //NSString *apiUrl = @"https://wamsbluclus001rest-hs.cloudapp.net/api";
-    
     NSString *apiVersionQueryString = [NSString  stringWithFormat:@"api-version=%@", self.apiVersion];
     return [NSString stringWithFormat:@"%@/%@?%@", self.apiUrl, endpoint, apiVersionQueryString];
 }
 
+/**
+ * Runs when the view is first loaded. In this implementation, we get the access token and save it in
+ * an instance variable.
+ *
+ */
 - (void)viewDidLoad
 {
     [super viewDidLoad];
     
-    //Get the access token
-    
-    //saleh
-    //self.accessToken = [self getAccessToken:@"tftestmediaservice"
-    //                             accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
-    
-    //tripfilesQA
+    //Get the access token for tripfilesQA
     self.accessToken = [self getAccessToken:@"tripfilesqa2"
                                  accountKey:@"0uXuWRXKVX23EUhV8LT5ZDPT/uM6JwIfIrCJJJCAWk0="];
     
+    //Specific to account
     self.apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
     self.apiVersion = @"2.6";
-    
-    
-    /*self.accessToken = @"http%3a%2f%2fschemas.xmlsoap.org%2fws%2f2005%2f05%2fidentity%2fclaims%2fnameidentifier=tftestmediaservice&urn%3aSubscriptionId=73a37cf8-3c3d-45c0-8442-6d825b799bb5&http%3a%2f%2fschemas.microsoft.com%2faccesscontrolservice%2f2010%2f07%2fclaims%2fidentityprovider=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net%2f&Audience=urn%3aWindowsAzureMediaServices&ExpiresOn=1401329690&Issuer=https%3a%2f%2fwamsprodglobal001acs.accesscontrol.windows.net %2f&HMACSHA256=tygFBbqNhfCL6zcBxm1r6xDHolcioliQYtKa0NbnY6I%3d";*/
 }
 
 /**
@@ -159,10 +157,10 @@
 }
 
 /**
- * Creates an asset on Azure Media Services
+ * Generates the metadata for an asset on Azure Media Services
  * @param assetId The ID of the asset
  * @param accessToken The access token for authentication
- * @return HTTP Status code returned in response
+ * @return HTTP Status code returned in response. 204 for success.
  *
  */
 - (NSInteger)createAssetFile:(NSString *) assetId accessToken: (NSString *) accessToken
@@ -196,6 +194,14 @@
 
 }
 
+/**
+ * Creates an access policy.
+ * @param policyName The name of the AccessPolicy
+ * @param durationInMinutes The time to live for the AccessPolicy
+ * @param permissions The permissions for the access policy. Values can be found here http://msdn.microsoft.com/en-us/library/hh974297.aspx.
+ * @return The ID of the created access policy.
+ *
+ */
 - (NSString *)createAccessPolicy:(NSString *) policyName durationInMinutes: (NSString *)durationInMinutes permissions:(NSNumber *)permissions accessToken:(NSString *)accessToken
 {
     NSError *error;
@@ -257,6 +263,15 @@
     return accessPolicyId;
 }
 
+/**
+ * Creates a Locator for an Asset using the AccessPolicy
+ * @param assetId The ID of the asset
+ * @param @accessPolicyId The ID of the access policy that will be used
+ * @param startTime The time when the locator should become active. Use 5 minutes prior to current time to use the locator immediately.
+ * @param type The locator's type. 0 for None; 1 for SAS; 2 for OnDemandOrigin
+ * @return The response's JSON as an NSDictionary. It contains information about the created Locator.
+ *
+ */
 - (NSDictionary *)createLocator:(NSString *) assetId accessPolicyId: (NSString *)accessPolicyId startTime:(NSString *)startTime type: (NSNumber *)locatorType accessToken:(NSString *)accessToken
 {
     NSError *error;
@@ -322,7 +337,6 @@
 /**
  * Uploads a file to an Azure Storage Services blob specified by blobUrl
  * @param blobUrl The url of the blob. Function will issue an HTTP PUT to this URL
- * @param fileName The name of the file to be stored in Azure Storage Service blog
  * @param fileData The file's data
  * @return statusCode of the HTTP response
  *
@@ -449,8 +463,8 @@
                        @"Configuration",
                        mediaProcessorId,
                        @"MediaProcessorId",
-                       //@"<taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
-                       //@"TaskBody",
+                       @"<taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
+                       @"TaskBody",
                        nil],
                       nil];
     NSDictionary* requestDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -461,7 +475,7 @@
                                        tasks,
                                        @"Tasks",
                                        nil];
-    NSLog(@"Job request: %@", requestDictionary);
+    
     //Convert dictionary to data
     NSData* requestJsonData = [NSJSONSerialization dataWithJSONObject:requestDictionary
                                                               options:NSJSONWritingPrettyPrinted error:&error];
@@ -471,7 +485,6 @@
     }
     
     request.HTTPBody = requestJsonData;
-    NSLog(@"Request JSON data: %@", [NSString stringWithUTF8String:[requestJsonData bytes]]);
     
     //Send the request
     NSURLResponse * response = nil;
@@ -492,25 +505,19 @@
         return nil;
     }
     
-    NSLog(@"Job response: %@", responseJson);
-    
     return responseJson;
 }
 
 - (void)uploadVideoToAzure
 {
-    NSString *messages = @"";
     //Phase 1: Ingestion
+    
     //Create asset
     NSString *assetId = [self createAsset:@"MadeInIOS"
           accessToken:self.accessToken];
     if (assetId == nil) {
         return;
     }
-    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Asset created."];
-    
-    
-    
 
     //Create AccessPolicy with write permissions
     NSString *accessPolicyId = [self createAccessPolicy:@"My Access Policy"
@@ -520,15 +527,11 @@
     
     //Create Locator with an upload URL to use when uploading the video
     //Set the locator's start time to 5 minutes before current time. This is needed, according to the API reference, for us to use to locator immediately.
-    
-    
-    
     NSDate *beforeFiveMinutes = [[NSDate alloc] initWithTimeIntervalSinceNow:-5*60];
     NSDateFormatter *DateFormatter=[[NSDateFormatter alloc] init];
     [DateFormatter setDateFormat:@"yyyy-MM-dd'T'HH:mm:ss'Z'"];
     NSString *startTime = [NSString stringWithFormat:@"%@",[DateFormatter stringFromDate:beforeFiveMinutes]];
     
-    //Create the locator
     NSDictionary *locatorResponse = [self createLocator:assetId
                                          accessPolicyId:accessPolicyId
                                               startTime:startTime
@@ -557,27 +560,18 @@
         NSLog(@"ERROR: Upload response code: %d", uploadStatusCode);
     }
     
-    
-    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"Video uploaded to Azure."];
-    
     //TODO: Delete upload Locator from Azure (optional)
     
-    //Create the AssetFile, which is used to generate the file's metadata
-    
+    //Create the AssetFile, which generates the file's metadata
     NSInteger createAssetFileStatusCode = [self createAssetFile:assetId accessToken:self.accessToken];
     if (createAssetFileStatusCode != 204) {
         NSLog(@"ERROR: Create AssetFile response code: %d", createAssetFileStatusCode);
     }
-    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"File metadata generated."];
     
     //Phase 2: Encoding
     //Obtain th Media Processor
     NSArray *mediaProcessors = [self getMediaProcessors:self.accessToken];
     NSString *mediaEncoderId = [[mediaProcessors objectAtIndex:0] objectForKey: @"Id"];
-    NSLog(@"Asset ID: %@", assetId);
-    NSLog(@"Media Encoder ID: %@", mediaEncoderId);
-    //NSLog(@"Media Processor response: %@",  mediaProcessors);
-    //messages = [NSString stringWithFormat:@"%@%n%@", messages, @"MediaProcessor grabbed."];
     
     //TODO: Uncomment and Complete Job request and check if it worked.
     NSDictionary *encodingJobResponse = [self startEncodingJob:@"Encoding from iOS"
@@ -592,7 +586,7 @@
     //TO BE CONTINUED
     
     //Show the messages on the screen
-    self.greetingContent.text = messages;
+    self.greetingContent.text = @"DONE!";
 }
 
 - (void)didReceiveMemoryWarning
@@ -601,7 +595,11 @@
     // Dispose of any resources that can be recreated.
 }
 
-// URL-encodes a string
+/**
+ * Utility function that URL-encodes a string.
+ * @param str The unencoded string
+ * @return The encoded string
+ */
 - (NSString *)urlEncode:(NSString *) str
 {
     NSString *unescaped = str;
