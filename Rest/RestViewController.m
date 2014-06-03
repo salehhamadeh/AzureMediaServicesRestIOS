@@ -342,9 +342,6 @@
     [request setValue:[NSString stringWithFormat:@"%u", fileData.length] forHTTPHeaderField:@"Content-Length"];
     [request setValue:@"BlockBlob" forHTTPHeaderField:@"x-ms-blob-type"];
     
-    // Add the authorization token to the header
-    //[request setValue:[NSString stringWithFormat:@"Bearer %@", accessToken] forHTTPHeaderField:@"Authorization"];
-    
     request.HTTPBody = fileData;
     
     //Send the request
@@ -409,8 +406,13 @@
     
 }
 
-//CAUTION: THIS METHOD CAN ONLY BE USED WITH MEDIA SERVICES < 2.5. THE NEWER API RELEASE INCLUDES NOTIFICATIONS FOR JOBS
-- (NSDictionary *)startEncodingJob:(NSString *)jobName assetId:(NSString *) assetId mediaProcessorId: (NSString *)mediaProcessorId encodingPreset:(NSString *)encodingPreset accessToken:(NSString *)accessToken
+
+- (NSDictionary *)startEncodingJob:
+    (NSString *) jobName assetId:
+    (NSString *) assetId mediaProcessorId:
+    (NSString *) mediaProcessorId encodingPreset:
+    (NSString *) encodingPreset accessToken:
+    (NSString *) accessToken
 {
     NSError *error;
     
@@ -447,8 +449,8 @@
                        @"Configuration",
                        mediaProcessorId,
                        @"MediaProcessorId",
-                       @"<taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
-                       @"TaskBody",
+                       //@"<taskBody><inputAsset>JobInputAsset(0)</inputAsset><outputAsset>JobOutputAsset(0)</outputAsset></taskBody>",
+                       //@"TaskBody",
                        nil],
                       nil];
     NSDictionary* requestDictionary = [NSDictionary dictionaryWithObjectsAndKeys:
@@ -489,6 +491,8 @@
         NSLog(@"ERROR: Cannot parse response JSON");
         return nil;
     }
+    
+    NSLog(@"Job response: %@", responseJson);
     
     return responseJson;
 }
@@ -581,7 +585,7 @@
           mediaProcessorId:mediaEncoderId
             encodingPreset:@"H264 Broadband 720p"
                accessToken:self.accessToken];
-    NSLog(@"Job response: %@", encodingJobResponse);
+
     
     //Phase 3: Delivering
     
