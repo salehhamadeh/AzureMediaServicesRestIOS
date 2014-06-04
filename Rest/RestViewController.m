@@ -35,13 +35,47 @@
     [super viewDidLoad];
     
     //Get the access token for tripfilesQA
-    self.accessToken = [self getAccessToken:@"tripfilesqa2"
-                                 accountKey:@"0uXuWRXKVX23EUhV8LT5ZDPT/uM6JwIfIrCJJJCAWk0="];
+    self.accessToken = [self getAccessToken:@"tftestmediaservice"
+                                 accountKey:@"o0dHQmypilrfeIIlnBylVhB+KuRoq189PurrZ25icyU="];
     
     //Specific to account
-    self.apiUrl = @"https://wamsbayclus001rest-hs.cloudapp.net/api";
+    self.apiUrl = [self getApiUrl: self.accessToken];
     self.apiVersion = @"2.6";
+    
+    NSLog(self.apiUrl);
 }
+
+- (NSString *)getApiUrl:(NSString *) accessToken
+{
+    NSError *error;
+    
+    // Create the request.
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString: @"https://media.windows.net/api?api-version=2.0"]];
+    
+    // Specify that it will be a GET request
+    [request setHTTPMethod:@"GET"];
+    
+    // Set headers "Content-Type: application/json; charset=utf-8" and "Accept: application/json"
+    
+    // Add the authorization token to the header
+    [request setValue:[NSString stringWithFormat:@"Bearer %@", accessToken] forHTTPHeaderField:@"Authorization"];
+    
+    //Send the request
+    NSHTTPURLResponse * response = nil;
+    NSData *data = [NSURLConnection sendSynchronousRequest:request
+                          returningResponse:&response
+                                      error:&error];
+    if (error != nil) {
+        NSLog(@"ERROR: Connection failed");
+        return nil;
+    }
+    
+    NSLog(@"%d - %@", [response statusCode], [NSHTTPURLResponse localizedStringForStatusCode:[response statusCode]]);
+    NSLog(@"%@", [NSString stringWithUTF8String:[data bytes]]);
+    NSLog([[response allHeaderFields] description]);
+    return nil;
+}
+
 
 /**
  * Gets an access token for the Azure Media Services account specified by accountName
